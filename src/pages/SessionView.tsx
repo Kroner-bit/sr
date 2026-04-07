@@ -5,7 +5,7 @@ import { doc, getDoc, collection, query, where, onSnapshot, addDoc } from 'fireb
 import { db } from '../firebase';
 import { Session, Participant } from '../types';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
-import { ArrowLeft, Plus, Users, BarChart2, X } from 'lucide-react';
+import { ArrowLeft, Plus, Users, BarChart2, X, MapPin } from 'lucide-react';
 import ParticipantCard from '../components/ParticipantCard';
 import ReportView from '../components/ReportView';
 
@@ -113,15 +113,28 @@ export default function SessionView() {
               </p>
             </div>
           </div>
-          {isSessionComplete && (
-            <button
-              onClick={() => setShowReport(true)}
-              className="flex items-center justify-center p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500/20 transition-colors"
-              title="Jelentés megtekintése"
-            >
-              <BarChart2 className="h-6 w-6" />
-            </button>
-          )}
+          <div className="flex items-center space-x-2">
+            {session.location && session.location !== 'Ismeretlen helyszín' && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.location)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center p-2 bg-cyan-500/10 text-cyan-400 rounded-xl hover:bg-cyan-500/20 transition-colors"
+                title="Megtekintés térképen"
+              >
+                <MapPin className="h-6 w-6" />
+              </a>
+            )}
+            {isSessionComplete && (
+              <button
+                onClick={() => setShowReport(true)}
+                className="flex items-center justify-center p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500/20 transition-colors"
+                title="Jelentés megtekintése"
+              >
+                <BarChart2 className="h-6 w-6" />
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

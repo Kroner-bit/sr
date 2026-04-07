@@ -89,10 +89,16 @@ export default function Dashboard() {
       <main className="max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-display font-bold text-white tracking-tight">Sessionök</h2>
+            <h2 className="text-2xl font-display font-bold text-white tracking-tight">ShootingRange</h2>
           </div>
-          <Link to="/profile" className="p-3 text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-full transition-all active:scale-95">
-            <UserIcon className="h-6 w-6" />
+          <Link to="/profile" className="p-1 text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-full transition-all active:scale-95 overflow-hidden">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="Profil" className="h-10 w-10 rounded-full object-cover" referrerPolicy="no-referrer" />
+            ) : (
+              <div className="h-10 w-10 flex items-center justify-center">
+                <UserIcon className="h-6 w-6" />
+              </div>
+            )}
           </Link>
         </div>
 

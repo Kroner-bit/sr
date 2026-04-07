@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Participant } from '../types';
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc, deleteField } from 'firebase/firestore';
 import { db } from '../firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 import { uploadTargetPhoto } from '../lib/storage';
-import { Camera, Image as ImageIcon, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Camera, Image as ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react';
 import ConfirmModal from './ConfirmModal';
 
 interface Props {
@@ -15,12 +15,24 @@ export default function ParticipantCard({ participant }: Props) {
   const [uploadingPractice, setUploadingPractice] = useState(false);
   const [uploadingLive, setUploadingLive] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [viewingPhoto, setViewingPhoto] = useState<{ url: string, type: 'practice' | 'live' } | null>(null);
+  const [photoToDelete, setPhotoToDelete] = useState<'practice' | 'live' | null>(null);
 
   const handleDelete = async () => {
     try {
       await deleteDoc(doc(db, 'participants', participant.id));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `participants/${participant.id}`);
+    }
+  };
+
+  const handleDeletePhoto = async (type: 'practice' | 'live') => {
+    try {
+      const docRef = doc(db, 'participants', participant.id);
+      await updateDoc(docRef, { [`${type}PhotoUrl`]: deleteField() });
+      setViewingPhoto(null);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, `participants/${participant.id}`);
     }
   };
 
@@ -126,38 +138,41 @@ export default function ParticipantCard({ participant }: Props) {
           ))}
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex-1">
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              id={`photo-${participant.id}-${type}`}
-              className="hidden"
-              onChange={(e) => handlePhotoUpload(e, isPractice ? 'practice' : 'live')}
-            />
-            <label
-              htmlFor={`photo-${participant.id}-${type}`}
-              className="cursor-pointer flex items-center justify-center space-x-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-200 transition-colors w-full"
-            >
-              {uploading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
-              ) : (
-                <Camera className="h-4 w-4 text-cyan-400" />
-              )}
-              <span>{photoUrl ? 'Új fotó' : 'Lőlap fotózása'}</span>
-            </label>
+        {!photoUrl ? (
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex-1">
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                id={`photo-${participant.id}-${type}`}
+                className="hidden"
+                onChange={(e) => handlePhotoUpload(e, isPractice ? 'practice' : 'live')}
+              />
+              <label
+                htmlFor={`photo-${participant.id}-${type}`}
+                className="cursor-pointer flex items-center justify-center space-x-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-200 transition-colors w-full"
+              >
+                {uploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                ) : (
+                  <Camera className="h-4 w-4 text-cyan-400" />
+                )}
+                <span>Lőlap fotózása</span>
+              </label>
+            </div>
           </div>
-        </div>
-        
-        {photoUrl && (
-          <div className="mt-3">
-            <a href={photoUrl} target="_blank" rel="noopener noreferrer" className="block relative group rounded-xl overflow-hidden border border-zinc-700">
+        ) : (
+          <div className="mt-4">
+            <button 
+              onClick={() => setViewingPhoto({ url: photoUrl, type: isPractice ? 'practice' : 'live' })}
+              className="w-full block relative group rounded-xl overflow-hidden border border-zinc-700"
+            >
               <img src={photoUrl} alt={`${title} lőlap`} className="w-full h-24 object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
               <div className="absolute inset-0 bg-zinc-950/20 group-hover:bg-transparent transition-colors flex items-center justify-center">
                 <ImageIcon className="text-white drop-shadow-md h-6 w-6" />
               </div>
-            </a>
+            </button>
           </div>
         )}
       </div>
@@ -188,6 +203,45 @@ export default function ParticipantCard({ participant }: Props) {
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteModal(false)}
       />
+
+      <ConfirmModal
+        isOpen={!!photoToDelete}
+        title="Kép törlése"
+        message="Biztosan törölni szeretnéd ezt a lőlapot? A művelet nem vonható vissza."
+        confirmText="Törlés"
+        onConfirm={() => {
+          if (photoToDelete) {
+            handleDeletePhoto(photoToDelete);
+            setPhotoToDelete(null);
+          }
+        }}
+        onCancel={() => setPhotoToDelete(null)}
+      />
+
+      {viewingPhoto && (
+        <div className="fixed inset-0 z-[100] bg-zinc-950/95 flex flex-col backdrop-blur-sm">
+          <div className="flex justify-between items-center px-4 pb-4 pt-[calc(env(safe-area-inset-top)+1rem)] bg-zinc-900/50 border-b border-zinc-800">
+            <button
+              onClick={() => setViewingPhoto(null)}
+              className="p-2 text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 rounded-full transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <button
+              onClick={() => {
+                setPhotoToDelete(viewingPhoto.type);
+              }}
+              className="p-2 text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-full transition-colors"
+              title="Kép törlése"
+            >
+              <Trash2 className="h-6 w-6" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-auto flex items-center justify-center p-4">
+            <img src={viewingPhoto.url} alt="Lőlap nagyítva" className="max-w-full max-h-full object-contain rounded-lg" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

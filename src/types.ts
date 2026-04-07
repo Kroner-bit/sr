@@ -12,6 +12,7 @@ export interface Session {
   date: string;
   status: 'active' | 'completed';
   createdAt: string;
+  location?: string;
 }
 
 export interface Participant {

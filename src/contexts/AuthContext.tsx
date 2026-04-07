@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User as FirebaseUser, onAuthStateChanged, signInWithPopup } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { User as FirebaseUser, onAuthStateChanged, signInWithPopup, deleteUser } from 'firebase/auth';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../firebase';
 import { User } from '../types';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
@@ -11,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,8 +70,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const deleteAccount = async () => {
+    if (!firebaseUser) return;
+    try {
+      // Töröljük a felhasználó dokumentumát a Firestore-ból
+      await deleteDoc(doc(db, 'users', firebaseUser.uid));
+      // Töröljük magát az Auth felhasználót
+      await deleteUser(firebaseUser);
+    } catch (error: any) {
+      console.error('Error deleting account', error);
+      if (error.code === 'auth/requires-recent-login') {
+        alert('A fiók törléséhez kérjük, jelentkezz be újra!');
+        await signOut();
+      } else {
+        throw error;
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, firebaseUser, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, firebaseUser, loading, signIn, signOut, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

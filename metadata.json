@@ -1,5 +1,5 @@
 {
   "name": "ShootingRange",
   "description": "Telefonos webapp lövészeti sessionök kezelésére, pontszámok rögzítésére és lőlapok fotózására.",
-  "requestFramePermissions": ["camera"]
+  "requestFramePermissions": ["camera", "geolocation"]
 }

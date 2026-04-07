@@ -29,8 +29,8 @@ export default function ReportView({ participants, onBack }: Props) {
 
   return (
     <div className="min-h-screen bg-zinc-950 pb-24">
-      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 sticky top-0 z-20">
-        <div className="max-w-lg mx-auto px-4 py-4 flex items-center space-x-3">
+      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 sticky top-0 z-20 pt-[env(safe-area-inset-top)]">
+        <div className="max-w-lg mx-auto px-4 py-2 flex items-center space-x-3">
           <button onClick={onBack} className="p-2 -ml-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors">
             <ArrowLeft className="h-6 w-6" />
           </button>

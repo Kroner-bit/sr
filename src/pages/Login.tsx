@@ -17,17 +17,9 @@ export default function Login() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="flex justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-cyan-500 blur-xl opacity-50 rounded-full" />
-            <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 relative">
-              <Target className="h-12 w-12 text-cyan-400" />
-            </div>
-          </div>
+          <img src="https://kephost.net/p/MjM1NTEzMQ.png" alt="ShootingRange" className="h-24 w-auto drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]" referrerPolicy="no-referrer" />
         </div>
-        <h2 className="mt-8 text-center text-4xl font-display font-bold text-white tracking-tight">
-          Shooting<span className="text-cyan-400">Range</span>
-        </h2>
-        <p className="mt-3 text-center text-zinc-400">
+        <p className="mt-6 text-center text-zinc-400">
           Digitális lőlap és eredménykövető
         </p>
       </div>

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Participant } from '../types';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { handleFirestoreError, OperationType } from '../lib/firestore-errors';
 import { uploadTargetPhoto } from '../lib/storage';
-import { Camera, Image as ImageIcon, Loader2, Plus } from 'lucide-react';
+import { Camera, Image as ImageIcon, Loader2, Plus, Trash2 } from 'lucide-react';
+import ConfirmModal from './ConfirmModal';
 
 interface Props {
   participant: Participant;
@@ -13,6 +14,15 @@ interface Props {
 export default function ParticipantCard({ participant }: Props) {
   const [uploadingPractice, setUploadingPractice] = useState(false);
   const [uploadingLive, setUploadingLive] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await deleteDoc(doc(db, 'participants', participant.id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `participants/${participant.id}`);
+    }
+  };
 
   const handleShotChange = async (type: 'practiceShots' | 'liveShots', index: number, value: string) => {
     let numValue = parseInt(value, 10);
@@ -59,7 +69,7 @@ export default function ParticipantCard({ participant }: Props) {
       await updateDoc(docRef, { [`${type}PhotoUrl`]: url });
     } catch (error) {
       console.error('Error uploading photo:', error);
-      alert('Hiba történt a kép feltöltésekor.');
+      handleFirestoreError(error, OperationType.UPDATE, `participants/${participant.id}`);
     } finally {
       if (type === 'practice') setUploadingPractice(false);
       else setUploadingLive(false);
@@ -158,11 +168,26 @@ export default function ParticipantCard({ participant }: Props) {
     <div className="bg-zinc-900 rounded-3xl shadow-xl border border-zinc-800 overflow-hidden">
       <div className="bg-zinc-800/30 px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
         <h3 className="text-lg font-display font-bold text-white">{participant.nickname}</h3>
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          className="p-2 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
       </div>
       <div className="p-4 space-y-4">
         {renderShots('practiceShots', 'Gyakorló')}
         {renderShots('liveShots', 'Éles')}
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Résztvevő törlése"
+        message={`Biztosan törölni szeretnéd ${participant.nickname} résztvevőt? Az eredményei és a feltöltött lőlapjai is véglegesen törlődnek.`}
+        confirmText="Törlés"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }

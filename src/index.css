@@ -10,6 +10,11 @@ body {
   @apply bg-zinc-950 text-zinc-100 antialiased;
   color-scheme: dark;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+button, a, input {
+  touch-action: manipulation;
 }
 
 /* Hide number input arrows */

@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import Dashboard from './pages/Dashboard';
 import SessionView from './pages/SessionView';
+import ProfileView from './pages/ProfileView';
 import Login from './pages/Login';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/session/:id" element={<PrivateRoute><SessionView /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><ProfileView /></PrivateRoute>} />
           </Routes>
         </Router>
       </AuthProvider>

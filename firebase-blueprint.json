@@ -1,0 +1,65 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered user of the ShootingRange app.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's unique ID." },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A shooting session created by a user.",
+      "type": "object",
+      "properties": {
+        "ownerId": { "type": "string", "description": "The UID of the user who created the session." },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerId", "date", "status", "createdAt"]
+    },
+    "Participant": {
+      "title": "Participant",
+      "description": "A participant in a shooting session.",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "ownerId": { "type": "string", "description": "The UID of the user who owns the session" },
+        "nickname": { "type": "string" },
+        "practiceShots": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "liveShots": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "practicePhotoUrl": { "type": "string" },
+        "livePhotoUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sessionId", "ownerId", "nickname", "practiceShots", "liveShots", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/sessions/{sessionId}": {
+      "schema": { "$ref": "#/entities/Session" },
+      "description": "Stores shooting sessions."
+    },
+    "/participants/{participantId}": {
+      "schema": { "$ref": "#/entities/Participant" },
+      "description": "Stores participants for a session."
+    }
+  }
+}

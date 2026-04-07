@@ -44,13 +44,14 @@ export default function Dashboard() {
     if (!user) return;
     setIsCreating(true);
     try {
-      const location = await getCurrentAddress();
+      const locationData = await getCurrentAddress();
       const newSession = {
         ownerId: user.uid,
         date: new Date().toISOString(),
         status: 'active',
         createdAt: new Date().toISOString(),
-        location,
+        location: locationData.address,
+        ...(locationData.coordinates ? { coordinates: locationData.coordinates } : {})
       };
       const docRef = await addDoc(collection(db, 'sessions'), newSession);
       navigate(`/session/${docRef.id}`);
@@ -85,9 +86,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 pb-24">
-      <main className="max-w-lg mx-auto px-4 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-6">
-        <div className="flex justify-between items-center mb-6">
+    <div className="h-[100dvh] flex flex-col bg-zinc-950 w-full overflow-hidden">
+      <header className="px-4 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-4 flex-shrink-0">
+        <div className="flex justify-between items-center">
           <div>
             <h2 className="text-2xl font-display font-bold text-white tracking-tight">ShootingRange</h2>
           </div>
@@ -101,6 +102,9 @@ export default function Dashboard() {
             )}
           </Link>
         </div>
+      </header>
+
+      <main className="flex-1 overflow-y-auto px-4 pb-32">
 
         {loading ? (
           <div className="flex justify-center py-12">
@@ -155,7 +159,7 @@ export default function Dashboard() {
       </main>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-6 left-0 right-0 px-4 max-w-lg mx-auto pointer-events-none">
+      <div className="absolute bottom-6 left-0 right-0 px-4 max-w-lg mx-auto pointer-events-none z-10">
         <button
           onClick={createSession}
           disabled={isCreating}

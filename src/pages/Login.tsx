@@ -10,7 +10,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 px-6 relative overflow-hidden">
+    <div className="h-[100dvh] bg-zinc-950 flex flex-col justify-center py-12 px-6 relative overflow-hidden w-full">
       {/* Background glowing effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px] pointer-events-none" />

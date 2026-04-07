@@ -28,8 +28,8 @@ export default function ReportView({ participants, onBack }: Props) {
   const colors = ['#22d3ee', '#34d399', '#f472b6', '#fbbf24', '#a78bfa', '#fb923c', '#38bdf8', '#4ade80'];
 
   return (
-    <div className="min-h-screen bg-zinc-950 pb-24">
-      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 sticky top-0 z-20 pt-[env(safe-area-inset-top)]">
+    <div className="h-[100dvh] flex flex-col bg-zinc-950 w-full overflow-hidden">
+      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 flex-shrink-0 pt-[env(safe-area-inset-top)] z-20">
         <div className="max-w-lg mx-auto px-4 py-2 flex items-center space-x-3">
           <button onClick={onBack} className="p-2 -ml-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors">
             <ArrowLeft className="h-6 w-6" />
@@ -38,7 +38,7 @@ export default function ReportView({ participants, onBack }: Props) {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="flex-1 overflow-y-auto px-4 py-6 space-y-6 pb-24">
         
         <div>
           <h2 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">Összesítés</h2>

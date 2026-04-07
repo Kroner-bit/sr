@@ -26,8 +26,8 @@ export default function ProfileView() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 pb-24">
-      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 sticky top-0 z-20 pt-[env(safe-area-inset-top)]">
+    <div className="h-[100dvh] flex flex-col bg-zinc-950 w-full overflow-hidden">
+      <header className="bg-zinc-900/80 backdrop-blur-xl border-b border-zinc-800 flex-shrink-0 pt-[env(safe-area-inset-top)] z-20">
         <div className="max-w-lg mx-auto px-4 py-2 flex items-center space-x-3">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors">
             <ArrowLeft className="h-6 w-6" />
@@ -36,7 +36,7 @@ export default function ProfileView() {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <main className="flex-1 overflow-y-auto px-4 py-6 space-y-6 pb-24">
         <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 flex flex-col items-center text-center">
           {user.photoURL ? (
             <img src={user.photoURL} alt={user.displayName || 'Profil'} className="w-24 h-24 rounded-full border-4 border-zinc-800 mb-4" />

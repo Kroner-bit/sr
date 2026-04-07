@@ -18,6 +18,17 @@ export default function ParticipantCard({ participant }: Props) {
   const [viewingPhoto, setViewingPhoto] = useState<{ url: string, type: 'practice' | 'live' } | null>(null);
   const [photoToDelete, setPhotoToDelete] = useState<'practice' | 'live' | null>(null);
 
+  React.useEffect(() => {
+    if (viewingPhoto) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [viewingPhoto]);
+
   const handleDelete = async () => {
     try {
       await deleteDoc(doc(db, 'participants', participant.id));

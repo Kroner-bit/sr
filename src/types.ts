@@ -13,6 +13,10 @@ export interface Session {
   status: 'active' | 'completed';
   createdAt: string;
   location?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface Participant {

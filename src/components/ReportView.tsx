@@ -12,7 +12,7 @@ export default function ReportView({ participants, onBack }: Props) {
   const practiceData = Array.from({ length: 8 }).map((_, i) => {
     const dataPoint: any = { shot: `${i + 1}.` };
     participants.forEach(p => {
-      dataPoint[p.nickname] = p.practiceShots[i] || 0;
+      dataPoint[p.nickname] = i < p.practiceShots.length ? p.practiceShots[i] : null;
     });
     return dataPoint;
   });
@@ -20,7 +20,7 @@ export default function ReportView({ participants, onBack }: Props) {
   const liveData = Array.from({ length: 8 }).map((_, i) => {
     const dataPoint: any = { shot: `${i + 1}.` };
     participants.forEach(p => {
-      dataPoint[p.nickname] = p.liveShots[i] || 0;
+      dataPoint[p.nickname] = i < p.liveShots.length ? p.liveShots[i] : null;
     });
     return dataPoint;
   });
@@ -44,9 +44,19 @@ export default function ReportView({ participants, onBack }: Props) {
           <h2 className="text-sm font-medium text-zinc-400 mb-3 uppercase tracking-wider">Összesítés</h2>
           <div className="space-y-3">
             {participants.map(p => {
-              const practiceAvg = p.practiceShots.reduce((a, b) => a + b, 0) / 8;
-              const liveAvg = p.liveShots.reduce((a, b) => a + b, 0) / 8;
-              const totalAvg = (practiceAvg + liveAvg) / 2;
+              const practiceAvg = p.practiceShots.length > 0 ? p.practiceShots.reduce((a, b) => a + b, 0) / p.practiceShots.length : 0;
+              const liveAvg = p.liveShots.length > 0 ? p.liveShots.reduce((a, b) => a + b, 0) / p.liveShots.length : 0;
+              
+              // Total average based on available categories
+              let totalAvg = 0;
+              if (p.practiceShots.length > 0 && p.liveShots.length > 0) {
+                totalAvg = (practiceAvg + liveAvg) / 2;
+              } else if (p.practiceShots.length > 0) {
+                totalAvg = practiceAvg;
+              } else if (p.liveShots.length > 0) {
+                totalAvg = liveAvg;
+              }
+
               return (
                 <div key={p.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex justify-between items-center">
                   <div>

@@ -80,7 +80,7 @@ export default function SessionView() {
     }
   };
 
-  const isSessionComplete = participants.length > 0 && participants.every(p => p.practiceShots.length === 8 && p.liveShots.length === 8);
+  const canShowReport = participants.length > 0 && participants.some(p => p.practiceShots.length >= 4 || p.liveShots.length >= 4);
 
   if (loading) {
     return (
@@ -125,7 +125,7 @@ export default function SessionView() {
                 <MapPin className="h-6 w-6" />
               </a>
             )}
-            {isSessionComplete && (
+            {canShowReport && (
               <button
                 onClick={() => setShowReport(true)}
                 className="flex items-center justify-center p-2 bg-emerald-500/10 text-emerald-400 rounded-xl hover:bg-emerald-500/20 transition-colors"
